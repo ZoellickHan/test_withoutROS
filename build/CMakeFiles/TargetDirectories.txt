@@ -1,0 +1,3 @@
+/home/zoellickhan/Code/test_withoutros/build/CMakeFiles/test_withoutros.dir
+/home/zoellickhan/Code/test_withoutros/build/CMakeFiles/edit_cache.dir
+/home/zoellickhan/Code/test_withoutros/build/CMakeFiles/rebuild_cache.dir

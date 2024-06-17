@@ -1,0 +1,17 @@
+[
+{
+  "directory": "/home/zoellickhan/Code/test_withoutros/build",
+  "command": "/usr/bin/c++  -I/home/zoellickhan/Code/test_withoutros/include -g -std=gnu++11 -o CMakeFiles/test_withoutros.dir/src/crc.cpp.o -c /home/zoellickhan/Code/test_withoutros/src/crc.cpp",
+  "file": "/home/zoellickhan/Code/test_withoutros/src/crc.cpp"
+},
+{
+  "directory": "/home/zoellickhan/Code/test_withoutros/build",
+  "command": "/usr/bin/c++  -I/home/zoellickhan/Code/test_withoutros/include -g -std=gnu++11 -o CMakeFiles/test_withoutros.dir/src/newDriver.cpp.o -c /home/zoellickhan/Code/test_withoutros/src/newDriver.cpp",
+  "file": "/home/zoellickhan/Code/test_withoutros/src/newDriver.cpp"
+},
+{
+  "directory": "/home/zoellickhan/Code/test_withoutros/build",
+  "command": "/usr/bin/c++  -I/home/zoellickhan/Code/test_withoutros/include -g -std=gnu++11 -o CMakeFiles/test_withoutros.dir/src/read.cpp.o -c /home/zoellickhan/Code/test_withoutros/src/read.cpp",
+  "file": "/home/zoellickhan/Code/test_withoutros/src/read.cpp"
+}
+]

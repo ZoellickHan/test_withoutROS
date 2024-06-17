@@ -1,0 +1,1 @@
+/usr/bin/c++ -g CMakeFiles/test_withoutros.dir/src/crc.cpp.o CMakeFiles/test_withoutros.dir/src/newDriver.cpp.o CMakeFiles/test_withoutros.dir/src/read.cpp.o -o test_withoutros 
