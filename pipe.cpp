@@ -95,7 +95,7 @@ int main() {
 
 
 
-/*
+
 
 // compile single file with g++ example_gpt.cpp -o example_gpt
 
@@ -180,5 +180,3 @@ int main() {
         return 1;
     }
 }
-
-*/

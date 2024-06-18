@@ -13,7 +13,6 @@
 #include <sys/resource.h>
 #include <cstdlib>
 
-
 #define READ_BUFFER_SIZE 64
 #define HEADER_SIZE 4
 #define PROTOCOL_SIZE 64
@@ -129,21 +128,70 @@ Port::PkgState decode()
 
 }
 
+void receiveProcess(int readPipe[MAX_BUFFER_SIZE])
+{
+
+
+}
+
+void transmitProcess(int writePipe[MAX_BUFFER_SIZE])
+{
+
+}
+
 int main()
 {
-    // pid_t receive;
-    // pid_t transmit;
+    pid_t receive;
+    pid_t transmit;
 
-    // uint8_t readPipe[MAX_BUFFER_SIZE];
-    // uint8_t writePipe[MAX_BUFFER_SIZE];
+    int readPipe[MAX_BUFFER_SIZE];
+    int writePipe[MAX_BUFFER_SIZE];
 
     shared_ptr<SerialConfig> config = make_shared<SerialConfig>(2000000,8,0,SerialConfig::StopBit::TWO,SerialConfig::Parity::NONE);
     shared_ptr<Port>         port   = make_shared<Port>(config);
 
-    if(port->openPort())
-    {
-        port->init();
+    if (pipe(readPipe) < 0 || pipe(writePipe) < 0) {
+        std::cerr << "Pipe creation failed!" << std::endl;
+        exit(1);
     }
+
+    if(port->openPort())
+        port->init();
+    
+    receive = fork();
+
+    if(receive < 0)
+    {
+        printf(" receive process died... \n");
+        exit(1);
+    }
+    else if (receive == 0)
+    {
+        printf(" start receive process with id : %d \n",getpid());
+        while(true)
+        {
+           receiveProcess(readPipe); 
+        }
+    }
+    else
+    {
+        transmit = fork();
+    }
+
+    if(transmit < 0)
+    {
+        printf("transmit process died... \n");
+        exit(1);
+    }
+   else if (transmit == 0)
+   {
+        printf(" start transmit process with id : %d \n", getpid());
+        while(true)
+        {
+            transmitProcess(writePipe);
+        }
+   }
+   
 
     while(true)
     {        
@@ -162,6 +210,8 @@ int main()
     }
     return 0;
 }
+
+
 // void prepareContent()
 // {
 //     content[4] = 80;
