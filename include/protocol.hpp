@@ -2,7 +2,7 @@
 #define RM_SERIAL_DRIVER__NEWPROTOCOL_HPP_
 
 #include <sys/cdefs.h>
-
+#include <cstring>
 #include <algorithm>
 #include <boost/cstdint.hpp>
 #include <cstdint>
@@ -66,6 +66,21 @@ struct Header
     uint8_t sof        = 0xAAu;
     uint8_t dataLen    = 0;
     uint8_t protocolID = 0;
+    uint8_t crc_1;
+    uint8_t crc_2;
+
+} __attribute__((packed));
+
+struct Header_4sof
+{
+    uint8_t sof1        = 0xAAu;
+    uint8_t sof2        = 0xAAu;
+    uint8_t sof3        = 0xAAu;
+    uint8_t sof4        = 0xAAu;
+    uint8_t dataLen     = 0;
+
+    uint8_t little_endian  = 0;
+    uint8_t protocolID     = 0x55;
     uint8_t crc_1;
     uint8_t crc_2;
 
@@ -313,6 +328,13 @@ struct ActionCommand
     uint8_t crc_1;
     uint8_t crc_2;
 } __attribute__((packed));
+
+template<typename T>
+inline T convertToStruct(const uint8_t* buffer) {
+    T result;
+    std::memcpy(&result, buffer, sizeof(T));
+    return result;
+}
 
 template <typename T>
 inline T fromVector(const std::vector<uint8_t> &data)

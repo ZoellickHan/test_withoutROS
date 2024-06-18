@@ -2,7 +2,7 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "test_withoutros"
+			"path" : "test_withoutROS"
 		}
 	],
 	"backtrace" : 1,
@@ -52,7 +52,7 @@
 			[
 				{
 					"backtrace" : 2,
-					"path" : "/home/zoellickhan/Code/test_withoutros/include"
+					"path" : "/home/zoellickhan/Code/test_withoutROS/include"
 				}
 			],
 			"language" : "CXX",
@@ -72,7 +72,7 @@
 			]
 		}
 	],
-	"id" : "test_withoutros::@6890427a1f51a3e7e1df",
+	"id" : "test_withoutROS::@6890427a1f51a3e7e1df",
 	"link" : 
 	{
 		"commandFragments" : 
@@ -88,8 +88,8 @@
 		],
 		"language" : "CXX"
 	},
-	"name" : "test_withoutros",
-	"nameOnDisk" : "test_withoutros",
+	"name" : "test_withoutROS",
+	"nameOnDisk" : "test_withoutROS",
 	"paths" : 
 	{
 		"build" : ".",

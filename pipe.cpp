@@ -40,9 +40,9 @@ int main() {
         std::cerr << "Pipe creation failed!" << std::endl;
         exit(1);
     }
-
+    
     pid_t pid1 = fork();
-
+    std::cout<<pid1<<std::endl;
     if (pid1 < 0) {
         std::cerr << "Fork failed for the first child!" << std::endl;
         exit(1);
@@ -79,3 +79,106 @@ int main() {
 
     return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+
+// compile single file with g++ example_gpt.cpp -o example_gpt
+
+#include <iostream>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <cstring>
+
+int main() {
+    int pipe1[2];
+    int pipe2[2];
+    char message1[] = "Parent says hi!";
+    char message2[100] = "Child 2 says hi!";
+
+    if (pipe(pipe1) == -1 || pipe(pipe2) == -1) {
+        std::cerr << "Failed to create pipe." << std::endl;
+        return 1;
+    }
+
+    pid_t child1Pid, child2Pid;
+
+    child1Pid = fork();
+
+    if (child1Pid == 0) {
+        // Child 1 process code
+        std::cout << "Hello from the child process 1!\n";
+
+        close(pipe1[1]);  // Close the write end of pipe1
+        // close(pipe2[0]);  // Close the read end of pipe2
+
+        char buffer[100];
+        read(pipe1[0], buffer, sizeof(buffer));
+
+        std::cout << "Child 1 received message: " << buffer << std::endl;
+
+        close(pipe1[0]);  // Close the read end of pipe1
+        // close(pipe2[1]);  // Close the write end of pipe2
+
+        return 0;
+    } else if (child1Pid > 0) {
+        child2Pid = fork();
+
+        if (child2Pid == 0) {
+            // Child 2 process code
+            std::cout << "Hello from the child process 2!\n";
+
+            // close(pipe1[0]);  // Close the read end of pipe1
+            close(pipe2[0]);  // Close the read end of pipe2
+
+            write(pipe2[1], message2, strlen(message2) + 1);
+
+            // close(pipe1[1]);  // Close the write end of pipe1
+            close(pipe2[1]);  // Close the write end of pipe2
+
+            return 0;
+        } else if (child2Pid > 0) {
+            // Parent process code
+            close(pipe1[0]);  // Close the read end of pipe1
+            close(pipe2[1]);  // Close the write end of pipe2
+
+            write(pipe1[1], message1, strlen(message1) + 1);
+
+            char buffer[100];
+            read(pipe2[0], buffer, sizeof(buffer));
+
+            std::cout << "Parent received message: " << buffer << std::endl;
+
+            // close(pipe1[1]);  // Close the write end of pipe1
+            // close(pipe2[1]);  // Close the write end of pipe2
+
+            wait(NULL);  // Wait for child 1 to finish
+            wait(NULL);  // Wait for child 2 to finish
+
+            return 0;
+        } else {
+            std::cerr << "Failed to create child process 2." << std::endl;
+            return 1;
+        }
+    } else {
+        std::cerr << "Failed to create child process 1." << std::endl;
+        return 1;
+    }
+}
+
+*/

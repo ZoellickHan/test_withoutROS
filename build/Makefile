@@ -57,10 +57,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/zoellickhan/Code/test_withoutros
+CMAKE_SOURCE_DIR = /home/zoellickhan/Code/test_withoutROS
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/zoellickhan/Code/test_withoutros/build
+CMAKE_BINARY_DIR = /home/zoellickhan/Code/test_withoutROS/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -87,9 +87,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/zoellickhan/Code/test_withoutros/build/CMakeFiles /home/zoellickhan/Code/test_withoutros/build//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/zoellickhan/Code/test_withoutROS/build/CMakeFiles /home/zoellickhan/Code/test_withoutROS/build//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/zoellickhan/Code/test_withoutros/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/zoellickhan/Code/test_withoutROS/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -117,24 +117,24 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named test_withoutros
+# Target rules for targets named test_withoutROS
 
 # Build rule for target.
-test_withoutros: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_withoutros
-.PHONY : test_withoutros
+test_withoutROS: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_withoutROS
+.PHONY : test_withoutROS
 
 # fast build rule for target.
-test_withoutros/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_withoutros.dir/build.make CMakeFiles/test_withoutros.dir/build
-.PHONY : test_withoutros/fast
+test_withoutROS/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_withoutROS.dir/build.make CMakeFiles/test_withoutROS.dir/build
+.PHONY : test_withoutROS/fast
 
 src/crc.o: src/crc.cpp.o
 .PHONY : src/crc.o
 
 # target to build an object file
 src/crc.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_withoutros.dir/build.make CMakeFiles/test_withoutros.dir/src/crc.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_withoutROS.dir/build.make CMakeFiles/test_withoutROS.dir/src/crc.cpp.o
 .PHONY : src/crc.cpp.o
 
 src/crc.i: src/crc.cpp.i
@@ -142,7 +142,7 @@ src/crc.i: src/crc.cpp.i
 
 # target to preprocess a source file
 src/crc.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_withoutros.dir/build.make CMakeFiles/test_withoutros.dir/src/crc.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_withoutROS.dir/build.make CMakeFiles/test_withoutROS.dir/src/crc.cpp.i
 .PHONY : src/crc.cpp.i
 
 src/crc.s: src/crc.cpp.s
@@ -150,7 +150,7 @@ src/crc.s: src/crc.cpp.s
 
 # target to generate assembly for a file
 src/crc.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_withoutros.dir/build.make CMakeFiles/test_withoutros.dir/src/crc.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_withoutROS.dir/build.make CMakeFiles/test_withoutROS.dir/src/crc.cpp.s
 .PHONY : src/crc.cpp.s
 
 src/newDriver.o: src/newDriver.cpp.o
@@ -158,7 +158,7 @@ src/newDriver.o: src/newDriver.cpp.o
 
 # target to build an object file
 src/newDriver.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_withoutros.dir/build.make CMakeFiles/test_withoutros.dir/src/newDriver.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_withoutROS.dir/build.make CMakeFiles/test_withoutROS.dir/src/newDriver.cpp.o
 .PHONY : src/newDriver.cpp.o
 
 src/newDriver.i: src/newDriver.cpp.i
@@ -166,7 +166,7 @@ src/newDriver.i: src/newDriver.cpp.i
 
 # target to preprocess a source file
 src/newDriver.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_withoutros.dir/build.make CMakeFiles/test_withoutros.dir/src/newDriver.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_withoutROS.dir/build.make CMakeFiles/test_withoutROS.dir/src/newDriver.cpp.i
 .PHONY : src/newDriver.cpp.i
 
 src/newDriver.s: src/newDriver.cpp.s
@@ -174,7 +174,7 @@ src/newDriver.s: src/newDriver.cpp.s
 
 # target to generate assembly for a file
 src/newDriver.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_withoutros.dir/build.make CMakeFiles/test_withoutros.dir/src/newDriver.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_withoutROS.dir/build.make CMakeFiles/test_withoutROS.dir/src/newDriver.cpp.s
 .PHONY : src/newDriver.cpp.s
 
 src/read.o: src/read.cpp.o
@@ -182,7 +182,7 @@ src/read.o: src/read.cpp.o
 
 # target to build an object file
 src/read.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_withoutros.dir/build.make CMakeFiles/test_withoutros.dir/src/read.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_withoutROS.dir/build.make CMakeFiles/test_withoutROS.dir/src/read.cpp.o
 .PHONY : src/read.cpp.o
 
 src/read.i: src/read.cpp.i
@@ -190,7 +190,7 @@ src/read.i: src/read.cpp.i
 
 # target to preprocess a source file
 src/read.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_withoutros.dir/build.make CMakeFiles/test_withoutros.dir/src/read.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_withoutROS.dir/build.make CMakeFiles/test_withoutROS.dir/src/read.cpp.i
 .PHONY : src/read.cpp.i
 
 src/read.s: src/read.cpp.s
@@ -198,7 +198,7 @@ src/read.s: src/read.cpp.s
 
 # target to generate assembly for a file
 src/read.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_withoutros.dir/build.make CMakeFiles/test_withoutros.dir/src/read.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_withoutROS.dir/build.make CMakeFiles/test_withoutROS.dir/src/read.cpp.s
 .PHONY : src/read.cpp.s
 
 # Help Target
@@ -209,7 +209,7 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... test_withoutros"
+	@echo "... test_withoutROS"
 	@echo "... src/crc.o"
 	@echo "... src/crc.i"
 	@echo "... src/crc.s"

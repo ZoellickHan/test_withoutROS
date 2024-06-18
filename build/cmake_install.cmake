@@ -1,4 +1,4 @@
-# Install script for directory: /home/zoellickhan/Code/test_withoutros
+# Install script for directory: /home/zoellickhan/Code/test_withoutROS
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/zoellickhan/Code/test_withoutros/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/zoellickhan/Code/test_withoutROS/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

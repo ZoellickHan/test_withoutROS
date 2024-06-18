@@ -55,7 +55,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/home/zoellickhan/Code/test_withoutros/build"
+			"value" : "/home/zoellickhan/Code/test_withoutROS/build"
 		},
 		{
 			"name" : "CMAKE_CACHE_MAJOR_VERSION",
@@ -595,7 +595,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/home/zoellickhan/Code/test_withoutros"
+			"value" : "/home/zoellickhan/Code/test_withoutROS"
 		},
 		{
 			"name" : "CMAKE_INSTALL_PREFIX",
@@ -839,7 +839,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "test_withoutros"
+			"value" : "test_withoutROS"
 		},
 		{
 			"name" : "CMAKE_RANLIB",
@@ -1122,7 +1122,7 @@
 			"value" : "FALSE"
 		},
 		{
-			"name" : "test_withoutros_BINARY_DIR",
+			"name" : "test_withoutROS_BINARY_DIR",
 			"properties" : 
 			[
 				{
@@ -1131,10 +1131,10 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/home/zoellickhan/Code/test_withoutros/build"
+			"value" : "/home/zoellickhan/Code/test_withoutROS/build"
 		},
 		{
-			"name" : "test_withoutros_IS_TOP_LEVEL",
+			"name" : "test_withoutROS_IS_TOP_LEVEL",
 			"properties" : 
 			[
 				{
@@ -1146,7 +1146,7 @@
 			"value" : "ON"
 		},
 		{
-			"name" : "test_withoutros_SOURCE_DIR",
+			"name" : "test_withoutROS_SOURCE_DIR",
 			"properties" : 
 			[
 				{
@@ -1155,7 +1155,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/home/zoellickhan/Code/test_withoutros"
+			"value" : "/home/zoellickhan/Code/test_withoutROS"
 		}
 	],
 	"kind" : "cache",
