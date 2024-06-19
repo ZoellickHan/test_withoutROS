@@ -25,9 +25,8 @@ using namespace chrono;
 using namespace rm_serial_driver;
 using namespace newSerialDriver;
 
-uint8_t readBuffer[PKG_SIZE];
 uint8_t decodeBuffer[PKG_SIZE];
-deque<uint8_t> buffer;
+
 
 rm_serial_driver::Header_4sof header_4sof;
 
@@ -70,17 +69,35 @@ bool crc_ok        = false;
 auto start =  high_resolution_clock::now();
 
 
-Port::PkgState decode()
+void ifusepipe()
+{
+    for(int i = 0; i < PKG_SIZE; i++)
+    {
+        if(decodeBuffer[i] != content[i])
+        {
+            error_sum++;
+        }
+        else{
+            auto stop =  high_resolution_clock::now();
+            auto duration = duration_cast<microseconds>(stop-start);
+            printf("all :%d  decode error %d time: %f ms \n",read_sum,error_sum,double(duration.count()/1000));
+        }
+    }
+}
+
+Port::PkgState decode(std::deque<uint8_t> & buffer)
 {
     int size = buffer.size();
+    printf("size : %d ; sum : %d \n",size,read_sum);
+
     if( size < HEADER_SIZE )
         return Port::PkgState::HEADER_INCOMPLETE;
-    
-    // cout<<"boji is here!"<<std::endl;
+
     for(int i = 0; i < size; i++)
     {
         if(buffer[i] == 0xAA)
         {
+            printf("haah bojiijob ! \n");
             if(buffer[i+1] == 0xAA && buffer[i+2] == 0xAA && buffer[i+3] == 0xAA && i + 3 < size)
             {
                 std::copy(buffer.begin() + i, buffer.begin()+ i + HEADER_SIZE,decodeBuffer);
@@ -110,14 +127,13 @@ Port::PkgState decode()
                     return Port::PkgState::CRC_PKG_ERROR;
                 }
 
-                // ifusepipe(); // return the decode buffer;
+                ifusepipe(); // return the decode buffer;
                 buffer.erase(buffer.begin(), buffer.begin() + i + PKG_SIZE);
                 return Port::PkgState::COMPLETE;
 
             }
         }
     }
-
 }
 
 void receiveProcess(int readPipefd[2])
@@ -127,11 +143,30 @@ void receiveProcess(int readPipefd[2])
     if(port->openPort())
         port->init();
 
-    while(true)
-    {
-        close;
-    }
+    uint8_t readBuffer[PKG_SIZE];
 
+    while(true)
+    {          
+        num_per_read = read(port->fd,readBuffer,READ_BUFFER_SIZE); 
+        if(num_per_read > 0)
+        {
+            close(readPipefd[0]);     //close the read
+
+            if (write(readPipefd[1], readBuffer, READ_BUFFER_SIZE * sizeof(uint8_t)) == -1) 
+            {
+                perror("write");
+                close(readPipefd[1]);
+                exit(EXIT_FAILURE);
+            }
+
+            read_sum += num_per_read;
+        }
+        else
+        {
+            port->reopen();
+        }
+      
+    }
 }
 
 void transmitProcess(int writePipefd[2], int writeSize)
@@ -160,18 +195,36 @@ void transmitProcess(int writePipefd[2], int writeSize)
     }    
 }
 
-void mainReceiveProcess()
+void mainReceiveFromProcess(int readPipefd[2], std::deque<uint8_t>& buffer)
 {
+    uint8_t receiveBuffer[MAX_BUFFER_SIZE];
 
+    close(readPipefd[1]); // close the write
+
+    if (read(readPipefd[0], receiveBuffer, READ_BUFFER_SIZE * sizeof(uint8_t)) == -1) 
+    {
+        perror("read");
+        close(readPipefd[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    printf("main receive from read : \n");
+    for(int j = 0; j < num_per_read; j++)
+    {
+        printf(" %d ",receiveBuffer[j]);
+    }
+    
+    buffer.insert(buffer.end(),receiveBuffer,receiveBuffer + READ_BUFFER_SIZE);
+    decode(buffer);
 }
 
 
-void mainTransmitProcess(int readPipefd[2], int writePipefd[2])
+void mainTransmitToProcess(int writePipefd[2])
 {
-
     TwoCRC_ChassisCommand  twoCRC_ChassisCommand;
     TwoCRC_GimbalCommand   twoCRC_GimbalCommand;
     uint8_t buff1[sizeof(TwoCRC_ChassisCommand)],buff2[sizeof(TwoCRC_GimbalCommand)];
+
     // datalen : payload. = all - 2crc - header; 
     twoCRC_ChassisCommand.header.dataLen = 19 - 2 - sizeof(Header);
     twoCRC_ChassisCommand.vel_w = 0.5;
@@ -187,8 +240,8 @@ void mainTransmitProcess(int readPipefd[2], int writePipefd[2])
     twoCRC_GimbalCommand.target_pitch = 0.5;
     twoCRC_GimbalCommand.target_yaw   = 0.5;
 
-    structToArray(twoCRC_ChassisCommand,buff1);
-    structToArray(twoCRC_GimbalCommand,buff2);
+    rm_serial_driver::structToArray(twoCRC_ChassisCommand,buff1);
+    rm_serial_driver::structToArray(twoCRC_GimbalCommand,buff2);
 
     crc16::Append_CRC16_Check_Sum(buff1,sizeof(Header));
     crc16::Append_CRC16_Check_Sum(buff2,sizeof(Header));
@@ -217,6 +270,7 @@ void mainTransmitProcess(int readPipefd[2], int writePipefd[2])
 
 int main()
 {
+    deque<uint8_t> buffer;
     //port
     int writeSize = sizeof(TwoCRC_ChassisCommand) + sizeof(TwoCRC_GimbalCommand);
 
@@ -243,10 +297,7 @@ int main()
     else if (receive == 0)
     {
         printf(" start receive process with id : %d \n",getpid());
-        while(true)
-        {
-           receiveProcess(readPipefd); 
-        }
+        // receiveProcess(readPipefd); 
     }
     else
     {
@@ -267,25 +318,10 @@ int main()
    {
         while(true)
         {
-           mainTransmitProcess(readPipefd,writePipefd); 
+            mainReceiveFromProcess(readPipefd,buffer);
+            mainTransmitToProcess(writePipefd); 
         }
    }
-
-    // while(true)
-    // {        
-    //     num_per_read = read(port->fd,readBuffer,READ_BUFFER_SIZE);
-    //     read_sum += num_per_read;
-     
-    //     if( num_per_read > 0)
-    //     {
-    //         buffer.insert(buffer.end(),readBuffer,readBuffer+num_per_read);
-    //         decode();
-    //     }
-    //     else
-    //     {
-    //         printf(" X( ");
-    //     }
-    // }
 
     return 0;
 }
@@ -422,18 +458,43 @@ int main()
 // // }
 
 // //i i1 i2 i3 // i4 i5 i6 i7 // i8
-// void ifusepipe()
-// {
-//     for(int i = 0; i < PKG_SIZE; i++)
-//     {
-//         if(decodeBuffer[i] != content[i])
-//         {
-//             error_sum++;
-//         }
-//         else{
-//             auto stop =  high_resolution_clock::now();
-//             auto duration = duration_cast<microseconds>(stop-start);
-//             printf("all :%d  decode error %d time: %f ms \n",read_sum,error_sum,double(duration.count()/1000));
-//         }
+
+
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <unistd.h>
+// #include <sys/mman.h>
+// #include <sys/wait.h>
+
+// int main() {
+//     int *shared_var;
+
+//     // Creating shared memory
+//     shared_var = mmap(NULL, sizeof(*shared_var), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+//     if (shared_var == MAP_FAILED) {
+//         perror("mmap");
+//         exit(EXIT_FAILURE);
 //     }
+
+//     *shared_var = 0;  // Initialize shared variable
+
+//     pid_t pid = fork();
+//     if (pid < 0) {
+//         perror("fork");
+//         exit(EXIT_FAILURE);
+//     } else if (pid == 0) {  // Child process
+//         *shared_var = 42;  // Modify the shared variable
+//         printf("Child set shared_var to %d\n", *shared_var);
+//     } else {  // Parent process
+//         wait(NULL);  // Wait for child process to complete
+//         printf("Parent sees shared_var as %d\n", *shared_var);
+//     }
+
+//     // Cleanup
+//     if (munmap(shared_var, sizeof(*shared_var)) == -1) {
+//         perror("munmap");
+//         exit(EXIT_FAILURE);
+//     }
+
+//     return 0;
 // }

@@ -149,33 +149,10 @@ struct TwoCRC_ChassisCommand  // TWOCRC_CHASSIS_CMD, also 0xB2
     float vel_y;
     float vel_w;
 
-    uint32_t crc;
+    uint8_t crc1;
+    uint8_t crc2;
 
 } __attribute__((packed));
-
-// struct TwoCRC_ChassisCommand // TWOCRC_CHASSIS_CMD, also 0xB2
-// {
-//     Header header;
-
-//     float vel_x;
-//     float vel_y;
-//     float vel_w;
-
-//     uint16_t crc;
-
-// } __attribute__((packed));
-
-// union TwoCRC_ChassisCommand
-// {
-// TwoCRC_ChassisCommandXXX twoCRC_ChassisCommand_;
-// uint8_t a[sizeof(TwoCRC_ChassisCommandXXX)];
-// };
-
-
-struct protocol_test
-{
-    uint8_t taicaile[8];
-}__attribute__((packed));
 
 struct TwoCRC_ActionCommand  // TWOCRC_ACTION_CMD, also 0xB3
 {
