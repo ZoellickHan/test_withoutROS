@@ -79,7 +79,7 @@ public:
     bool isPortOpen();
 
     // rx tx function
-    int  transmit(std::vector<uint8_t> & buff);  
+    int  transmit(uint8_t* buff);  
     int  receive();
 
     void readFun();

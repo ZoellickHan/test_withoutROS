@@ -149,10 +149,33 @@ struct TwoCRC_ChassisCommand  // TWOCRC_CHASSIS_CMD, also 0xB2
     float vel_y;
     float vel_w;
 
-    uint8_t crc_3;
-    uint8_t crc_4;
+    uint32_t crc;
 
 } __attribute__((packed));
+
+// struct TwoCRC_ChassisCommand // TWOCRC_CHASSIS_CMD, also 0xB2
+// {
+//     Header header;
+
+//     float vel_x;
+//     float vel_y;
+//     float vel_w;
+
+//     uint16_t crc;
+
+// } __attribute__((packed));
+
+// union TwoCRC_ChassisCommand
+// {
+// TwoCRC_ChassisCommandXXX twoCRC_ChassisCommand_;
+// uint8_t a[sizeof(TwoCRC_ChassisCommandXXX)];
+// };
+
+
+struct protocol_test
+{
+    uint8_t taicaile[8];
+}__attribute__((packed));
 
 struct TwoCRC_ActionCommand  // TWOCRC_ACTION_CMD, also 0xB3
 {
@@ -330,10 +353,17 @@ struct ActionCommand
 } __attribute__((packed));
 
 template<typename T>
-inline T convertToStruct(const uint8_t* buffer) {
+inline T arrayToStruct(const uint8_t* buffer) 
+{
     T result;
     std::memcpy(&result, buffer, sizeof(T));
     return result;
+}
+
+template<typename T>
+void structToArray(const T& inputStruct, uint8_t* outputArray) 
+{
+    std::memcpy(outputArray, reinterpret_cast<const uint8_t*>(&inputStruct), sizeof(T));
 }
 
 template <typename T>

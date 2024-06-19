@@ -1,7 +1,6 @@
 #include <vector>
 #include <bitset>
 #include "newDriver.hpp"
-#include "crc.hpp"
 #include "protocol.hpp"
 #include <cstring>
 #include <deque>
@@ -12,13 +11,14 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <cstdlib>
+#include <cstdint>
 
 #define READ_BUFFER_SIZE 64
 #define HEADER_SIZE 4
 #define PROTOCOL_SIZE 64
 #define MAX_BUFFER_SIZE 2048
 #define PKG_SIZE 91
-#define HEADER_SIZE 4+3+2 
+
 
 using namespace std;
 using namespace chrono;
@@ -54,28 +54,21 @@ uint8_t content[91] =
   0x94,0x2A
   };
 
+/**
+ * TODO:
+ * 1.achieve transmit process
+ * 2.achieve read process
+ * 3.adjust the piroty
+ * 4.monitor the state of the process.
+ */
+
 int read_sum;
 int error_sum;
 int num_per_read;
 bool crc_ok_header = false;
 bool crc_ok        = false;
 auto start =  high_resolution_clock::now();
-//i i1 i2 i3 // i4 i5 i6 i7 // i8
-void ifusepipe()
-{
-    for(int i = 0; i < PKG_SIZE; i++)
-    {
-        if(decodeBuffer[i] != content[i])
-        {
-            error_sum++;
-        }
-        else{
-            auto stop =  high_resolution_clock::now();
-            auto duration = duration_cast<microseconds>(stop-start);
-            printf("all :%d  decode error %d time: %f ms \n",read_sum,error_sum,double(duration.count()/1000));
-        }
-    }
-}
+
 
 Port::PkgState decode()
 {
@@ -100,14 +93,13 @@ Port::PkgState decode()
                     return Port::PkgState::CRC_HEADER_ERRROR;
                 }
 
-                header_4sof = convertToStruct<Header_4sof>(decodeBuffer);
+                header_4sof = arrayToStruct<Header_4sof>(decodeBuffer);
                 // pkg length = payload(dataLen) + header len (include header crc) + 2crc 
                 if( i + (header_4sof.dataLen + sizeof(Header_4sof) + 2) > size )
                 {
                     return Port::PkgState::PAYLOAD_INCOMPLETE;
                 }
 
-                // std::copy(buffer.begin() + i ,buffer.begin() + i + buffer[i+4], decodeBuffer);
                 std::copy(buffer.begin() + i ,buffer.begin() + i + header_4sof.dataLen + sizeof(Header_4sof) + 2, decodeBuffer);
                 crc_ok = crc16::Verify_CRC16_Check_Sum(decodeBuffer,PKG_SIZE);
 
@@ -118,7 +110,7 @@ Port::PkgState decode()
                     return Port::PkgState::CRC_PKG_ERROR;
                 }
 
-                ifusepipe(); // return the decode buffer;
+                // ifusepipe(); // return the decode buffer;
                 buffer.erase(buffer.begin(), buffer.begin() + i + PKG_SIZE);
                 return Port::PkgState::COMPLETE;
 
@@ -128,36 +120,119 @@ Port::PkgState decode()
 
 }
 
-void receiveProcess(int readPipe[MAX_BUFFER_SIZE])
+void receiveProcess(int readPipefd[2])
 {
+    shared_ptr<SerialConfig> config = make_shared<SerialConfig>(2000000,8,0,SerialConfig::StopBit::TWO,SerialConfig::Parity::NONE);
+    shared_ptr<Port>         port   = make_shared<Port>(config);
+    if(port->openPort())
+        port->init();
 
+    while(true)
+    {
+        close;
+    }
 
 }
 
-void transmitProcess(int writePipe[MAX_BUFFER_SIZE])
+void transmitProcess(int writePipefd[2], int writeSize)
+{
+    shared_ptr<SerialConfig> config = make_shared<SerialConfig>(2000000,8,0,SerialConfig::StopBit::TWO,SerialConfig::Parity::NONE);
+    shared_ptr<Port>         port   = make_shared<Port>(config);
+    if(port->openPort())
+        port->init();
+    
+    uint8_t data[MAX_BUFFER_SIZE];
+    
+    while(true)
+    {
+        close(writePipefd[1]);  //close the write
+
+        if (read(writePipefd[0], data, writeSize * sizeof(uint8_t)) == -1) 
+        {
+            perror("read");
+            close(writePipefd[0]);
+            exit(EXIT_FAILURE);
+            break;
+        }
+
+        if(port->transmit(data) < 0) 
+            port->reopen();
+    }    
+}
+
+void mainReceiveProcess()
 {
 
 }
+
+
+void mainTransmitProcess(int readPipefd[2], int writePipefd[2])
+{
+
+    TwoCRC_ChassisCommand  twoCRC_ChassisCommand;
+    TwoCRC_GimbalCommand   twoCRC_GimbalCommand;
+    uint8_t buff1[sizeof(TwoCRC_ChassisCommand)],buff2[sizeof(TwoCRC_GimbalCommand)];
+    // datalen : payload. = all - 2crc - header; 
+    twoCRC_ChassisCommand.header.dataLen = 19 - 2 - sizeof(Header);
+    twoCRC_ChassisCommand.vel_w = 0.5;
+    twoCRC_ChassisCommand.vel_x = 0.5;
+    twoCRC_ChassisCommand.vel_y = 0.5;
+    twoCRC_ChassisCommand.header.crc_1 = 7;
+    twoCRC_ChassisCommand.header.crc_2 = 7;
+    twoCRC_ChassisCommand.header.protocolID = 3;
+    twoCRC_ChassisCommand.header.sof = 170;
+
+    twoCRC_GimbalCommand.header.dataLen  = sizeof(TwoCRC_GimbalCommand)  - 2 - sizeof(Header);
+    twoCRC_GimbalCommand.shoot_mode   = 1;
+    twoCRC_GimbalCommand.target_pitch = 0.5;
+    twoCRC_GimbalCommand.target_yaw   = 0.5;
+
+    structToArray(twoCRC_ChassisCommand,buff1);
+    structToArray(twoCRC_GimbalCommand,buff2);
+
+    crc16::Append_CRC16_Check_Sum(buff1,sizeof(Header));
+    crc16::Append_CRC16_Check_Sum(buff2,sizeof(Header));
+
+    crc16::Append_CRC16_Check_Sum(buff1,sizeof(TwoCRC_ChassisCommand));
+    crc16::Append_CRC16_Check_Sum(buff2,sizeof(TwoCRC_GimbalCommand));
+
+    //transmit 
+    close(writePipefd[0]); //close the read
+
+    if (write(writePipefd[1], buff1, sizeof(TwoCRC_ChassisCommand) * sizeof(uint8_t)) == -1) 
+    {
+        perror("write");
+        close(writePipefd[1]);
+        exit(EXIT_FAILURE);
+    }
+
+    if(write(writePipefd[1], buff2, sizeof(TwoCRC_GimbalCommand) * sizeof(uint8_t)) == -1)
+    {
+        perror("write");
+        close(writePipefd[1]);
+        exit(EXIT_FAILURE);        
+    }
+}
+
 
 int main()
 {
+    //port
+    int writeSize = sizeof(TwoCRC_ChassisCommand) + sizeof(TwoCRC_GimbalCommand);
+
+    //process and pipe
+
     pid_t receive;
     pid_t transmit;
 
-    int readPipe[MAX_BUFFER_SIZE];
-    int writePipe[MAX_BUFFER_SIZE];
+    int readPipefd[2];
+    int writePipefd[2];
 
-    shared_ptr<SerialConfig> config = make_shared<SerialConfig>(2000000,8,0,SerialConfig::StopBit::TWO,SerialConfig::Parity::NONE);
-    shared_ptr<Port>         port   = make_shared<Port>(config);
-
-    if (pipe(readPipe) < 0 || pipe(writePipe) < 0) {
+    if (pipe(readPipefd) == -1 || pipe(writePipefd) == -1) {
         std::cerr << "Pipe creation failed!" << std::endl;
         exit(1);
     }
 
-    if(port->openPort())
-        port->init();
-    
     receive = fork();
 
     if(receive < 0)
@@ -170,7 +245,7 @@ int main()
         printf(" start receive process with id : %d \n",getpid());
         while(true)
         {
-           receiveProcess(readPipe); 
+           receiveProcess(readPipefd); 
         }
     }
     else
@@ -186,31 +261,34 @@ int main()
    else if (transmit == 0)
    {
         printf(" start transmit process with id : %d \n", getpid());
+        transmitProcess(writePipefd,writeSize);   
+   }
+   else
+   {
         while(true)
         {
-            transmitProcess(writePipe);
+           mainTransmitProcess(readPipefd,writePipefd); 
         }
    }
-   
 
-    while(true)
-    {        
-        num_per_read = read(port->fd,readBuffer,READ_BUFFER_SIZE);
-        read_sum += num_per_read;
+    // while(true)
+    // {        
+    //     num_per_read = read(port->fd,readBuffer,READ_BUFFER_SIZE);
+    //     read_sum += num_per_read;
      
-        if( num_per_read > 0)
-        {
-            buffer.insert(buffer.end(),readBuffer,readBuffer+num_per_read);
-            decode();
-        }
-        else
-        {
-            printf(" X( ");
-        }
-    }
+    //     if( num_per_read > 0)
+    //     {
+    //         buffer.insert(buffer.end(),readBuffer,readBuffer+num_per_read);
+    //         decode();
+    //     }
+    //     else
+    //     {
+    //         printf(" X( ");
+    //     }
+    // }
+
     return 0;
 }
-
 
 // void prepareContent()
 // {
@@ -265,6 +343,97 @@ int main()
 //                    }
 //                 }
 //             }
+//         }
+//     }
+// }
+
+
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <unistd.h>
+// #include <stdint.h>
+// #include <sys/types.h>
+// #include <sys/wait.h>
+
+// #define ARRAY_SIZE 10
+
+// int main() {
+//     int pipefd[2];
+//     pid_t pid;
+//     uint8_t data[ARRAY_SIZE] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+
+//     // Create a pipe
+//     if (pipe(pipefd) == -1) {
+//         perror("pipe");
+//         exit(EXIT_FAILURE);
+//     }
+
+//     // Fork the process
+//     pid = fork();
+//     if (pid == -1) 
+//     {
+//         perror("fork");
+//         exit(EXIT_FAILURE);
+//     }
+
+//     if (pid > 0) {  // Parent process
+//         // Close the read end of the pipe
+//         close(pipefd[0]);
+
+//         // Write the uint8_t array to the pipe
+//         if (write(pipefd[1], data, ARRAY_SIZE * sizeof(uint8_t)) == -1) 
+//         {
+//             perror("write");
+//             close(pipefd[1]);
+//             exit(EXIT_FAILURE);
+//         }
+
+//         // Close the write end of the pipe
+//         close(pipefd[1]);
+
+//         // Wait for the child process to finish
+//         wait(NULL);
+//     } else {  // Child process
+//         uint8_t buffer[ARRAY_SIZE];
+
+//         // Close the write end of the pipe
+//         close(pipefd[1]);
+
+//         // Read from the pipe
+//         if (read(pipefd[0], buffer, ARRAY_SIZE * sizeof(uint8_t)) == -1) 
+//         {
+//             perror("read");
+//             close(pipefd[0]);
+//             exit(EXIT_FAILURE);
+//         }
+
+//         // Close the read end of the pipe
+//         close(pipefd[0]);
+
+//         // Process the data (here we just print it)
+//         printf("Child process received data:\n");
+//         for (int i = 0; i < ARRAY_SIZE; i++) {
+//             printf("%u ", buffer[i]);
+//         }
+//         printf("\n");
+//     }
+
+//     return 0;
+// // }
+
+// //i i1 i2 i3 // i4 i5 i6 i7 // i8
+// void ifusepipe()
+// {
+//     for(int i = 0; i < PKG_SIZE; i++)
+//     {
+//         if(decodeBuffer[i] != content[i])
+//         {
+//             error_sum++;
+//         }
+//         else{
+//             auto stop =  high_resolution_clock::now();
+//             auto duration = duration_cast<microseconds>(stop-start);
+//             printf("all :%d  decode error %d time: %f ms \n",read_sum,error_sum,double(duration.count()/1000));
 //         }
 //     }
 // }

@@ -209,10 +209,9 @@ int Port::openPort()
 /**
  *  Transmit the data
 */
-int Port::transmit(std::vector<uint8_t> & buff)
+int Port::transmit(uint8_t* buff)
 {
-	memcpy(&TxBuff, buff.data() ,buff.size());
-    int num_per_write = write(fd,TxBuff,buff.size());
+    int num_per_write = write(fd,buff,sizeof(buff));
 
 	if(num_per_write > 0)
 		return num_per_write;

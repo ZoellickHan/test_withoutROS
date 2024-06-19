@@ -1,15 +1,37 @@
-#include <deque>
-#include <iostream>
+#include <stdio.h>
+#include <stdint.h>
+#include <string.h>
 
-int main(){
+// Define a struct with some fields
+struct MyStruct {
+    int a;
+    float b;
+    char c;
+};
 
-    std::deque<uint8_t> data;
-    for(int i = 0; i < 10; i++)
-    {
-        data.push_back(i);
+// Function to print the uint8_t array for verification
+void print_uint8_array(uint8_t *array, size_t size) {
+    for (size_t i = 0; i < size; i++) {
+        printf("%02x ", array[i]);
     }
+    printf("\n");
+}
 
-    data.erase(data.begin(),data.begin() + 6);
+int main() {
+    // Initialize the struct
+    struct MyStruct myStruct = {42, 3.14f, 'x'};
 
-    std::cout<<data.size()<<"  "<<data.max_size()<<std::endl;
+    // Calculate the size of the struct
+    size_t structSize = sizeof(myStruct);
+
+    // Allocate a uint8_t array to hold the struct data
+    uint8_t byteArray[structSize];
+
+    // Copy the struct data to the uint8_t array
+    memcpy(byteArray, &myStruct, structSize);
+
+    // Print the uint8 array for verification
+    print_uint8_array(byteArray, structSize);
+
+    return 0;
 }
