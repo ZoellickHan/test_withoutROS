@@ -78,7 +78,6 @@ struct Header_4sof
     uint8_t sof3        = 0xAAu;
     uint8_t sof4        = 0xAAu;
     uint8_t dataLen     = 0;
-
     uint8_t little_endian  = 0;
     uint8_t protocolID     = 0x55;
     uint8_t crc_1;

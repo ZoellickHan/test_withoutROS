@@ -14,7 +14,7 @@
 #include <cstdint>
 
 #define READ_BUFFER_SIZE 64
-#define HEADER_SIZE 4
+#define HEADER_SIZE 9
 #define PROTOCOL_SIZE 64
 #define MAX_BUFFER_SIZE 2048
 #define PKG_SIZE 91
@@ -62,7 +62,8 @@ uint8_t content[91] =
  */
 
 int read_sum;
-int error_sum;
+int error_sum_header;
+int error_sum_payload;
 int num_per_read;
 bool crc_ok_header = false;
 bool crc_ok        = false;
@@ -75,12 +76,13 @@ void ifusepipe()
     {
         if(decodeBuffer[i] != content[i])
         {
-            error_sum++;
+            printf("jile ! \n");
         }
-        else{
+        else
+        {
             auto stop =  high_resolution_clock::now();
             auto duration = duration_cast<microseconds>(stop-start);
-            printf("all :%d  decode error %d time: %f ms \n",read_sum,error_sum,double(duration.count()/1000));
+            printf("all :%d  error header %d error payload %d time: %f ms \n",read_sum,error_sum_header,error_sum_payload,double(duration.count()/1000));
         }
     }
 }
@@ -97,15 +99,14 @@ Port::PkgState decode(std::deque<uint8_t> & buffer)
     {
         if(buffer[i] == 0xAA)
         {
-            printf("haah bojiijob ! \n");
             if(buffer[i+1] == 0xAA && buffer[i+2] == 0xAA && buffer[i+3] == 0xAA && i + 3 < size)
             {
                 std::copy(buffer.begin() + i, buffer.begin()+ i + HEADER_SIZE,decodeBuffer);
                 crc_ok_header = crc16::Verify_CRC16_Check_Sum(decodeBuffer, HEADER_SIZE );
-
+                
                 if( !crc_ok_header )
                 {
-                    error_sum ++;
+                    error_sum_header ++;
                     buffer.erase(buffer.begin() + i, buffer.begin() + i + HEADER_SIZE);
                     return Port::PkgState::CRC_HEADER_ERRROR;
                 }
@@ -122,7 +123,7 @@ Port::PkgState decode(std::deque<uint8_t> & buffer)
 
                 if(!crc_ok)
                 {
-                    error_sum ++;
+                    error_sum_payload ++;
                     buffer.erase(buffer.begin(), buffer.begin() + i + PKG_SIZE);
                     return Port::PkgState::CRC_PKG_ERROR;
                 }
@@ -130,7 +131,6 @@ Port::PkgState decode(std::deque<uint8_t> & buffer)
                 ifusepipe(); // return the decode buffer;
                 buffer.erase(buffer.begin(), buffer.begin() + i + PKG_SIZE);
                 return Port::PkgState::COMPLETE;
-
             }
         }
     }
@@ -151,7 +151,7 @@ void receiveProcess(int readPipefd[2])
         if(num_per_read > 0)
         {
             close(readPipefd[0]);     //close the read
-
+            
             if (write(readPipefd[1], readBuffer, READ_BUFFER_SIZE * sizeof(uint8_t)) == -1) 
             {
                 perror("write");
@@ -208,11 +208,11 @@ void mainReceiveFromProcess(int readPipefd[2], std::deque<uint8_t>& buffer)
         exit(EXIT_FAILURE);
     }
 
-    printf("main receive from read : \n");
-    for(int j = 0; j < num_per_read; j++)
-    {
-        printf(" %d ",receiveBuffer[j]);
-    }
+    // printf("main receive from read : \n");
+    // for(int j = 0; j < READ_BUFFER_SIZE; j++)
+    // {
+    //     printf(" %d ",receiveBuffer[j]);
+    // }
     
     buffer.insert(buffer.end(),receiveBuffer,receiveBuffer + READ_BUFFER_SIZE);
     decode(buffer);
@@ -267,7 +267,6 @@ void mainTransmitToProcess(int writePipefd[2])
     }
 }
 
-
 int main()
 {
     deque<uint8_t> buffer;
@@ -297,7 +296,7 @@ int main()
     else if (receive == 0)
     {
         printf(" start receive process with id : %d \n",getpid());
-        // receiveProcess(readPipefd); 
+        receiveProcess(readPipefd); 
     }
     else
     {
@@ -359,7 +358,7 @@ int main()
 //         {
 //             if(buffer[i+1] == 0xAA && buffer[i+2] == 0xAA && buffer[i+3] == 0xAA && i + 3 < size)
 //             {
-//                 // printf("boji\n");
+//                
 //                 if( i  + PKG_SIZE > size)
 //                 {
 //                     buffer.erase(buffer.begin(),buffer.begin() + i);
