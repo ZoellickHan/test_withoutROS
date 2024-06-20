@@ -81,13 +81,6 @@ public:
     // rx tx function
     int  transmit(uint8_t* buff,int writeSize);  
     int  receive();
-
-    void readFun();
-    void decodeFun(int ID);
-    void decodeThreadFun();
-    void putinIndexFun(int size);
-    PkgState putoutIndexFun();
-
     
     // data and debug function
     int& geterrorHeader(){return error_header_count;}
@@ -114,7 +107,6 @@ private:
     bool isinit          = false;
     bool isopen          = false;
     
-
     //rx thread
     PkgState            frameState;
     // state data
