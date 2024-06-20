@@ -5,6 +5,8 @@
 #include <sys/resource.h>
 #include <cstring>
 #include <cstdlib>
+#include <fcntl.h>
+#include <iostream>
 
 void childProcess(int pipeFd[2], const std::string &message) {
     close(pipeFd[0]); // Close the read end of the pipe
@@ -47,6 +49,29 @@ int main() {
         std::cerr << "Fork failed for the first child!" << std::endl;
         exit(1);
     } else if (pid1 == 0) {
+
+           cout<<"=("<<endl;
+            int flags = fcntl(readPipefd[0],F_GETFL,0);
+            cout<<"=8("<<endl;
+
+
+            if (flags== -1)
+            {
+                cout<<"G"<<endl;
+                return 0;
+            }
+            flags |= O_NONBLOCK;
+            
+            fcntl(readPipefd[0],F_SETFL,flags);
+            int flag2 = fcntl(readPipefd[0],F_GETFL,0);
+
+            if (flag2 != flags )
+            {
+                cout<<"set fail;"<<endl;
+            }
+            else{
+                cout<< "ok set"<<endl;
+            }
         // First child process
         std::cout << "First child process with PID " << getpid() << std::endl;
         childProcess(pipeFd1, "Message from first child");
@@ -67,6 +92,7 @@ int main() {
             }
             childProcess(pipeFd2, "Message from second child");
         } else {
+            
             // Father process
             std::cout << "Father process with PID " << getpid() << std::endl;
             fatherProcess(pipeFd1, pipeFd2);

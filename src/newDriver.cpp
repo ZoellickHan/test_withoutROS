@@ -42,7 +42,7 @@ Port::Port(std::shared_ptr<newSerialDriver::SerialConfig> ptr)
 bool Port::init()
 {
 
-	cout<<"boji is here"<<endl;
+	// cout<<"boji is here"<<endl;
     memset(RxBuff,0x00,ROSCOMM_BUFFER_SIZE);
     memset(TxBuff,0x00,ROSCOMM_BUFFER_SIZE);
 	memset(readBuffer,0x00,BUFFER_SIZE);

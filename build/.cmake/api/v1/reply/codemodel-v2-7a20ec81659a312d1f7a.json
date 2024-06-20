@@ -27,7 +27,7 @@
 					[
 						0
 					],
-					"name" : "test_withoutROS",
+					"name" : "test_withoutROS2",
 					"targetIndexes" : 
 					[
 						0
@@ -39,7 +39,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "test_withoutROS::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-test_withoutROS-Debug-8e6ebf245d9ed02b1474.json",
+					"jsonFile" : "target-test_withoutROS-Debug-d64321f25ff58a21e05a.json",
 					"name" : "test_withoutROS",
 					"projectIndex" : 0
 				}
@@ -49,8 +49,8 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "/home/zoellickhan/Code/test_withoutROS/build",
-		"source" : "/home/zoellickhan/Code/test_withoutROS"
+		"build" : "/home/zoellickhan/Code/test_withoutROS2/build",
+		"source" : "/home/zoellickhan/Code/test_withoutROS2"
 	},
 	"version" : 
 	{
