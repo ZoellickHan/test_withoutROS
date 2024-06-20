@@ -79,7 +79,7 @@ public:
     bool isPortOpen();
 
     // rx tx function
-    int  transmit(uint8_t* buff);  
+    int  transmit(uint8_t* buff,int writeSize);  
     int  receive();
 
     void readFun();

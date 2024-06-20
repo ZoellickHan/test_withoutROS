@@ -1,7 +1,7 @@
 #include <vector>
 #include <bitset>
 #include "newDriver.hpp"
-#include "protocol.hpp"
+#include "message.hpp"
 #include <cstring>
 #include <deque>
 #include <chrono>
@@ -14,7 +14,8 @@
 #include <cstdint>
 
 #define READ_BUFFER_SIZE 64
-#define HEADER_SIZE 9
+#define HEADER_SIZE_long 9
+#define HEADER_SIZE_short 5
 #define PROTOCOL_SIZE 64
 #define MAX_BUFFER_SIZE 2048
 #define PKG_SIZE 91
@@ -87,54 +88,88 @@ void ifusepipe()
     }
 }
 
-Port::PkgState decode(std::deque<uint8_t> & buffer)
-{
-    int size = buffer.size();
-    printf("size : %d ; sum : %d \n",size,read_sum);
+// Port::PkgState decode(std::deque<uint8_t> & buffer)
+// {
+//     int size = buffer.size();
+//     printf("size : %d ; sum : %d \n",size,read_sum);
 
-    if( size < HEADER_SIZE )
-        return Port::PkgState::HEADER_INCOMPLETE;
+//     if( size < HEADER_SIZE_long )
+//         return Port::PkgState::HEADER_INCOMPLETE;
 
-    for(int i = 0; i < size; i++)
-    {
-        if(buffer[i] == 0xAA)
-        {
-            if(buffer[i+1] == 0xAA && buffer[i+2] == 0xAA && buffer[i+3] == 0xAA && i + 3 < size)
-            {
-                std::copy(buffer.begin() + i, buffer.begin()+ i + HEADER_SIZE,decodeBuffer);
-                crc_ok_header = crc16::Verify_CRC16_Check_Sum(decodeBuffer, HEADER_SIZE );
+//     for(int i = 0; i < size; i++)
+//     {
+//         if(buffer[i] == 0xAA)
+//         {
+//             if(buffer[i+1] == 0xAA && buffer[i+2] == 0xAA && buffer[i+3] == 0xAA && i + 3 < size)
+//             {
+//                 std::copy(buffer.begin() + i, buffer.begin()+ i + HEADER_SIZE_long ,decodeBuffer);
+//                 crc_ok_header = crc16::Verify_CRC16_Check_Sum(decodeBuffer, HEADER_SIZE_long );
                 
-                if( !crc_ok_header )
-                {
-                    error_sum_header ++;
-                    buffer.erase(buffer.begin() + i, buffer.begin() + i + HEADER_SIZE);
-                    return Port::PkgState::CRC_HEADER_ERRROR;
-                }
+//                 if( !crc_ok_header )
+//                 {
+//                     error_sum_header ++;
+//                     buffer.erase(buffer.begin() + i, buffer.begin() + i + HEADER_SIZE);
+//                     return Port::PkgState::CRC_HEADER_ERRROR;
+//                 }
 
-                header_4sof = arrayToStruct<Header_4sof>(decodeBuffer);
-                // pkg length = payload(dataLen) + header len (include header crc) + 2crc 
-                if( i + (header_4sof.dataLen + sizeof(Header_4sof) + 2) > size )
-                {
-                    return Port::PkgState::PAYLOAD_INCOMPLETE;
-                }
+//                 header_4sof = arrayToStruct<Header_4sof>(decodeBuffer);
+//                 // pkg length = payload(dataLen) + header len (include header crc) + 2crc 
+//                 if( i + (header_4sof.dataLen + sizeof(Header_4sof) + 2) > size )
+//                 {
+//                     return Port::PkgState::PAYLOAD_INCOMPLETE;
+//                 }
 
-                std::copy(buffer.begin() + i ,buffer.begin() + i + header_4sof.dataLen + sizeof(Header_4sof) + 2, decodeBuffer);
-                crc_ok = crc16::Verify_CRC16_Check_Sum(decodeBuffer,PKG_SIZE);
+//                 std::copy(buffer.begin() + i ,buffer.begin() + i + header_4sof.dataLen + sizeof(Header_4sof) + 2, decodeBuffer);
+//                 crc_ok = crc16::Verify_CRC16_Check_Sum(decodeBuffer,PKG_SIZE);
 
-                if(!crc_ok)
-                {
-                    error_sum_payload ++;
-                    buffer.erase(buffer.begin(), buffer.begin() + i + PKG_SIZE);
-                    return Port::PkgState::CRC_PKG_ERROR;
-                }
+//                 if(!crc_ok)
+//                 {
+//                     error_sum_payload ++;
+//                     buffer.erase(buffer.begin(), buffer.begin() + i + PKG_SIZE);
+//                     return Port::PkgState::CRC_PKG_ERROR;
+//                 }
 
-                ifusepipe(); // return the decode buffer;
-                buffer.erase(buffer.begin(), buffer.begin() + i + PKG_SIZE);
-                return Port::PkgState::COMPLETE;
-            }
-        }
-    }
-}
+//                 ifusepipe(); // return the decode buffer;
+//                 buffer.erase(buffer.begin(), buffer.begin() + i + PKG_SIZE);
+//                 return Port::PkgState::COMPLETE;
+//             }
+//             else
+//             {
+//                 std::copy(buffer.begin() + i, buffer.begin()+ i + HEADER_SIZE_long,decodeBuffer);
+//                 crc_ok_header = crc16::Verify_CRC16_Check_Sum(decodeBuffer, HEADER_SIZE_long );
+                
+//                 if( !crc_ok_header )
+//                 {
+//                     error_sum_header ++;
+//                     buffer.erase(buffer.begin() + i, buffer.begin() + i + HEADER_SIZE);
+//                     return Port::PkgState::CRC_HEADER_ERRROR;
+//                 }
+
+//                 header_4sof = arrayToStruct<Header_4sof>(decodeBuffer);
+//                 // pkg length = payload(dataLen) + header len (include header crc) + 2crc 
+//                 if( i + (header_4sof.dataLen + sizeof(Header_4sof) + 2) > size )
+//                 {
+//                     return Port::PkgState::PAYLOAD_INCOMPLETE;
+//                 }
+
+//                 std::copy(buffer.begin() + i ,buffer.begin() + i + header_4sof.dataLen + sizeof(Header_4sof) + 2, decodeBuffer);
+//                 crc_ok = crc16::Verify_CRC16_Check_Sum(decodeBuffer,PKG_SIZE);
+
+//                 if(!crc_ok)
+//                 {
+//                     error_sum_payload ++;
+//                     buffer.erase(buffer.begin(), buffer.begin() + i + PKG_SIZE);
+//                     return Port::PkgState::CRC_PKG_ERROR;
+//                 }
+
+//                 ifusepipe(); // return the decode buffer;
+//                 buffer.erase(buffer.begin(), buffer.begin() + i + PKG_SIZE);
+//                 return Port::PkgState::COMPLETE;                
+
+//             }
+//         }
+//     }
+// }
 
 void receiveProcess(int readPipefd[2])
 {
@@ -163,7 +198,7 @@ void receiveProcess(int readPipefd[2])
         }
         else
         {
-            port->reopen();
+            // port->reopen();
         }
       
     }
@@ -171,10 +206,18 @@ void receiveProcess(int readPipefd[2])
 
 void transmitProcess(int writePipefd[2], int writeSize)
 {
+
+    
+    int num_per_write = 0;
     shared_ptr<SerialConfig> config = make_shared<SerialConfig>(2000000,8,0,SerialConfig::StopBit::TWO,SerialConfig::Parity::NONE);
     shared_ptr<Port>         port   = make_shared<Port>(config);
-    if(port->openPort())
-        port->init();
+    if(port->openPort()){
+        cout<<"boji is here"<<endl;
+    }
+    else{
+        cout << "Open port fail" << endl;
+    }
+       
     
     uint8_t data[MAX_BUFFER_SIZE];
     
@@ -190,8 +233,15 @@ void transmitProcess(int writePipefd[2], int writeSize)
             break;
         }
 
-        if(port->transmit(data) < 0) 
-            port->reopen();
+        for(int i = 0; i< writeSize; i++)
+        {
+            printf("whrite: %d \n",data[i]);
+        }
+
+        num_per_write = write(port->fd,data,writeSize);
+        
+        // num_per_write = port->transmit(data,writeSize);
+        printf("num_per_write: %d \n ",num_per_write);
     }    
 }
 
@@ -214,8 +264,8 @@ void mainReceiveFromProcess(int readPipefd[2], std::deque<uint8_t>& buffer)
     //     printf(" %d ",receiveBuffer[j]);
     // }
     
-    buffer.insert(buffer.end(),receiveBuffer,receiveBuffer + READ_BUFFER_SIZE);
-    decode(buffer);
+    // buffer.insert(buffer.end(),receiveBuffer,receiveBuffer + READ_BUFFER_SIZE);
+    // decode(buffer);
 }
 
 
@@ -274,7 +324,6 @@ int main()
     int writeSize = sizeof(TwoCRC_ChassisCommand) + sizeof(TwoCRC_GimbalCommand);
 
     //process and pipe
-
     pid_t receive;
     pid_t transmit;
 
@@ -301,26 +350,28 @@ int main()
     else
     {
         transmit = fork();
+
+        if(transmit < 0)
+        {
+            printf("transmit process died... \n");
+            exit(1);
+        }
+        else if (transmit == 0)
+        {
+            printf(" start transmit process receivewith id : %d \n", getpid());
+            transmitProcess(writePipefd,writeSize);   
+        }
+        else
+        {
+            while(true)
+            {
+                // mainReceiveFromProcess(readPipefd,buffer);
+                mainTransmitToProcess(writePipefd); 
+            }
+        }
     }
 
-    if(transmit < 0)
-    {
-        printf("transmit process died... \n");
-        exit(1);
-    }
-   else if (transmit == 0)
-   {
-        printf(" start transmit process with id : %d \n", getpid());
-        transmitProcess(writePipefd,writeSize);   
-   }
-   else
-   {
-        while(true)
-        {
-            mainReceiveFromProcess(readPipefd,buffer);
-            mainTransmitToProcess(writePipefd); 
-        }
-   }
+
 
     return 0;
 }

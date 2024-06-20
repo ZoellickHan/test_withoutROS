@@ -41,6 +41,8 @@ Port::Port(std::shared_ptr<newSerialDriver::SerialConfig> ptr)
 */
 bool Port::init()
 {
+
+	cout<<"boji is here"<<endl;
     memset(RxBuff,0x00,ROSCOMM_BUFFER_SIZE);
     memset(TxBuff,0x00,ROSCOMM_BUFFER_SIZE);
 	memset(readBuffer,0x00,BUFFER_SIZE);
@@ -209,9 +211,9 @@ int Port::openPort()
 /**
  *  Transmit the data
 */
-int Port::transmit(uint8_t* buff)
+int Port::transmit(uint8_t* buff,int writeSize)
 {
-    int num_per_write = write(fd,buff,sizeof(buff));
+    int num_per_write = write(fd,buff,writeSize);
 
 	if(num_per_write > 0)
 		return num_per_write;
@@ -254,7 +256,8 @@ bool Port::reopen()
 		else{
 			config->devname = (char*)"/dev/ttyCH343USB1";
 			if(openPort()) {return true;}
-			else{
+			else
+			{
 				config->devname = (char*)"/dev/ttyCH343USB2";
 				if(openPort()) return true;
 				else return false;

@@ -618,7 +618,7 @@ CMakeFiles/test_withoutROS.dir/src/read.cpp.o: ../src/read.cpp \
   /usr/include/c++/11/istream \
   /usr/include/c++/11/bits/istream.tcc \
   ../include/crc.hpp \
-  ../include/protocol.hpp \
+  ../include/message.hpp \
   /usr/include/c++/11/deque \
   /usr/include/c++/11/bits/stl_deque.h \
   /usr/include/c++/11/bits/deque.tcc \
@@ -656,6 +656,8 @@ CMakeFiles/test_withoutROS.dir/src/read.cpp.o: ../src/read.cpp \
 /usr/include/x86_64-linux-gnu/sys/time.h:
 
 /usr/include/c++/11/bits/deque.tcc:
+
+../include/message.hpp:
 
 /usr/include/c++/11/bitset:
 
