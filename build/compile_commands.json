@@ -1,0 +1,17 @@
+[
+{
+  "directory": "/home/zoellickhan/Code/2024CV/testSerialDriver/test_withoutROS/build",
+  "command": "/usr/bin/c++  -I/home/zoellickhan/Code/2024CV/testSerialDriver/test_withoutROS/include -g -std=gnu++11 -o CMakeFiles/test_withoutROS.dir/src/crc.cpp.o -c /home/zoellickhan/Code/2024CV/testSerialDriver/test_withoutROS/src/crc.cpp",
+  "file": "/home/zoellickhan/Code/2024CV/testSerialDriver/test_withoutROS/src/crc.cpp"
+},
+{
+  "directory": "/home/zoellickhan/Code/2024CV/testSerialDriver/test_withoutROS/build",
+  "command": "/usr/bin/c++  -I/home/zoellickhan/Code/2024CV/testSerialDriver/test_withoutROS/include -g -std=gnu++11 -o CMakeFiles/test_withoutROS.dir/src/newDriver.cpp.o -c /home/zoellickhan/Code/2024CV/testSerialDriver/test_withoutROS/src/newDriver.cpp",
+  "file": "/home/zoellickhan/Code/2024CV/testSerialDriver/test_withoutROS/src/newDriver.cpp"
+},
+{
+  "directory": "/home/zoellickhan/Code/2024CV/testSerialDriver/test_withoutROS/build",
+  "command": "/usr/bin/c++  -I/home/zoellickhan/Code/2024CV/testSerialDriver/test_withoutROS/include -g -std=gnu++11 -o CMakeFiles/test_withoutROS.dir/src/read.cpp.o -c /home/zoellickhan/Code/2024CV/testSerialDriver/test_withoutROS/src/read.cpp",
+  "file": "/home/zoellickhan/Code/2024CV/testSerialDriver/test_withoutROS/src/read.cpp"
+}
+]

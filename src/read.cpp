@@ -12,14 +12,14 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <cstdlib>
-
+#include <chrono>
 
 #define READ_BUFFER_SIZE 64
 #define HEADER_SIZE 4
 #define PROTOCOL_SIZE 64
 #define MAX_BUFFER_SIZE 2048
 #define PKG_SIZE 91
-#define HEADER_SIZE 4+3+2 
+#define HEADER_SIZE 5
 
 using namespace std;
 using namespace chrono;
@@ -54,7 +54,7 @@ uint8_t content[91] =
   // CRC16
   0x94,0x2A
   };
-
+    auto time_start = std::chrono::high_resolution_clock::now();
 int read_sum;
 int error_sum;
 int num_per_read;
@@ -64,18 +64,12 @@ auto start =  high_resolution_clock::now();
 //i i1 i2 i3 // i4 i5 i6 i7 // i8
 void ifusepipe()
 {
-    for(int i = 0; i < PKG_SIZE; i++)
-    {
-        if(decodeBuffer[i] != content[i])
-        {
-            error_sum++;
-        }
-        else{
-            auto stop =  high_resolution_clock::now();
-            auto duration = duration_cast<microseconds>(stop-start);
-            printf("all :%d  decode error %d time: %f ms \n",read_sum,error_sum,double(duration.count()/1000));
-        }
-    }
+    auto stop =  high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(stop-time_start);
+    if(duration.count() != 0 )
+        printf("all :%d  decode error %d crc rate: %f time: %f ms baudrate: %f \n",
+        read_sum,error_sum,float(error_sum)/float(read_sum),double(duration.count()/1000),read_sum*11/double(duration.count())*1000000);
+
 }
 
 Port::PkgState decode()
@@ -89,54 +83,44 @@ Port::PkgState decode()
     {
         if(buffer[i] == 0xAA)
         {
-            if(buffer[i+1] == 0xAA && buffer[i+2] == 0xAA && buffer[i+3] == 0xAA && i + 3 < size)
+            std::copy(buffer.begin() + i, buffer.begin()+ i + HEADER_SIZE,decodeBuffer);
+            crc_ok_header = crc16::Verify_CRC16_Check_Sum(decodeBuffer, HEADER_SIZE );
+
+            if( !crc_ok_header )
             {
-                std::copy(buffer.begin() + i, buffer.begin()+ i + HEADER_SIZE,decodeBuffer);
-                crc_ok_header = crc16::Verify_CRC16_Check_Sum(decodeBuffer, HEADER_SIZE );
-
-                if( !crc_ok_header )
-                {
-                    error_sum ++;
-                    buffer.erase(buffer.begin() + i, buffer.begin() + i + HEADER_SIZE);
-                    return Port::PkgState::CRC_HEADER_ERRROR;
-                }
-
-                header_4sof = convertToStruct<Header_4sof>(decodeBuffer);
-                // pkg length = payload(dataLen) + header len (include header crc) + 2crc 
-                if( i + (header_4sof.dataLen + sizeof(Header_4sof) + 2) > size )
-                {
-                    return Port::PkgState::PAYLOAD_INCOMPLETE;
-                }
-
-                // std::copy(buffer.begin() + i ,buffer.begin() + i + buffer[i+4], decodeBuffer);
-                std::copy(buffer.begin() + i ,buffer.begin() + i + header_4sof.dataLen + sizeof(Header_4sof) + 2, decodeBuffer);
-                crc_ok = crc16::Verify_CRC16_Check_Sum(decodeBuffer,PKG_SIZE);
-
-                if(!crc_ok)
-                {
-                    error_sum ++;
-                    buffer.erase(buffer.begin(), buffer.begin() + i + PKG_SIZE);
-                    return Port::PkgState::CRC_PKG_ERROR;
-                }
-
-                ifusepipe(); // return the decode buffer;
-                buffer.erase(buffer.begin(), buffer.begin() + i + PKG_SIZE);
-                return Port::PkgState::COMPLETE;
-
+                error_sum ++;
+                buffer.erase(buffer.begin() + i, buffer.begin() + i + HEADER_SIZE);
+                return Port::PkgState::CRC_HEADER_ERRROR;
             }
+
+            Header header = convertToStruct<Header>(decodeBuffer);
+            // pkg length = payload(dataLen) + header len (include header crc) + 2crc 
+            if( i + (header.dataLen + sizeof(Header) + 2) > size )
+            {
+                return Port::PkgState::PAYLOAD_INCOMPLETE;
+            }
+
+            // std::copy(buffer.begin() + i ,buffer.begin() + i + buffer[i+4], decodeBuffer);
+            std::copy(buffer.begin() + i ,buffer.begin() + i + header.dataLen + sizeof(Header) + 2, decodeBuffer);
+            crc_ok = crc16::Verify_CRC16_Check_Sum(decodeBuffer,header.dataLen + sizeof(Header) + 2);
+
+            if(!crc_ok)
+            {
+                error_sum ++;
+                buffer.erase(buffer.begin(), buffer.begin() + i + header.dataLen + sizeof(Header) + 2);
+                return Port::PkgState::CRC_PKG_ERROR;
+            }
+
+            ifusepipe(); // return the decode buffer;
+            buffer.erase(buffer.begin(), buffer.begin() + i + header.dataLen + sizeof(Header) + 2);
+            return Port::PkgState::COMPLETE;
         }
     }
-
 }
 
 int main()
 {
-    // pid_t receive;
-    // pid_t transmit;
-
-    // uint8_t readPipe[MAX_BUFFER_SIZE];
-    // uint8_t writePipe[MAX_BUFFER_SIZE];
-
+    auto time_start = std::chrono::high_resolution_clock::now();
     shared_ptr<SerialConfig> config = make_shared<SerialConfig>(2000000,8,0,SerialConfig::StopBit::TWO,SerialConfig::Parity::NONE);
     shared_ptr<Port>         port   = make_shared<Port>(config);
 
