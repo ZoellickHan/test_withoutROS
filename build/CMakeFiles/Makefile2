@@ -54,10 +54,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/zoellickhan/Code/test_withoutROS
+CMAKE_SOURCE_DIR = /home/zoellickhan/Code/2024CV/testSerialDriver/test_withoutROS
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/zoellickhan/Code/test_withoutROS/build
+CMAKE_BINARY_DIR = /home/zoellickhan/Code/2024CV/testSerialDriver/test_withoutROS/build
 
 #=============================================================================
 # Directory level rules for the build root directory
@@ -81,14 +81,14 @@ clean: CMakeFiles/test_withoutROS.dir/clean
 CMakeFiles/test_withoutROS.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_withoutROS.dir/build.make CMakeFiles/test_withoutROS.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_withoutROS.dir/build.make CMakeFiles/test_withoutROS.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/zoellickhan/Code/test_withoutROS/build/CMakeFiles --progress-num=1,2,3,4 "Built target test_withoutROS"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/zoellickhan/Code/2024CV/testSerialDriver/test_withoutROS/build/CMakeFiles --progress-num=1,2,3,4 "Built target test_withoutROS"
 .PHONY : CMakeFiles/test_withoutROS.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/test_withoutROS.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/zoellickhan/Code/test_withoutROS/build/CMakeFiles 4
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/zoellickhan/Code/2024CV/testSerialDriver/test_withoutROS/build/CMakeFiles 4
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_withoutROS.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/zoellickhan/Code/test_withoutROS/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/zoellickhan/Code/2024CV/testSerialDriver/test_withoutROS/build/CMakeFiles 0
 .PHONY : CMakeFiles/test_withoutROS.dir/rule
 
 # Convenience name for target.

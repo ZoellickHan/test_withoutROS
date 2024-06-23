@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/zoellickhan/Code/test_withoutROS/include
+CXX_INCLUDES = -I/home/zoellickhan/Code/2024CV/testSerialDriver/test_withoutROS/include
 
-CXX_FLAGS = -g -std=gnu++11
+CXX_FLAGS = -std=gnu++11
 

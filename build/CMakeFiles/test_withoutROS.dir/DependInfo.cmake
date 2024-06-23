@@ -8,9 +8,9 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/zoellickhan/Code/test_withoutROS/src/crc.cpp" "CMakeFiles/test_withoutROS.dir/src/crc.cpp.o" "gcc" "CMakeFiles/test_withoutROS.dir/src/crc.cpp.o.d"
-  "/home/zoellickhan/Code/test_withoutROS/src/newDriver.cpp" "CMakeFiles/test_withoutROS.dir/src/newDriver.cpp.o" "gcc" "CMakeFiles/test_withoutROS.dir/src/newDriver.cpp.o.d"
-  "/home/zoellickhan/Code/test_withoutROS/src/read.cpp" "CMakeFiles/test_withoutROS.dir/src/read.cpp.o" "gcc" "CMakeFiles/test_withoutROS.dir/src/read.cpp.o.d"
+  "/home/zoellickhan/Code/2024CV/testSerialDriver/test_withoutROS/src/crc.cpp" "CMakeFiles/test_withoutROS.dir/src/crc.cpp.o" "gcc" "CMakeFiles/test_withoutROS.dir/src/crc.cpp.o.d"
+  "/home/zoellickhan/Code/2024CV/testSerialDriver/test_withoutROS/src/newDriver.cpp" "CMakeFiles/test_withoutROS.dir/src/newDriver.cpp.o" "gcc" "CMakeFiles/test_withoutROS.dir/src/newDriver.cpp.o.d"
+  "/home/zoellickhan/Code/2024CV/testSerialDriver/test_withoutROS/src/read.cpp" "CMakeFiles/test_withoutROS.dir/src/read.cpp.o" "gcc" "CMakeFiles/test_withoutROS.dir/src/read.cpp.o.d"
   )
 
 # Targets to which this target links.
